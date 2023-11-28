@@ -1,13 +1,13 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Application</title><style>
+    <title>Payment Application</title>
+    <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #8a2be2; /* Dark Orchid (Purple) */
-            color: #fff; /* White text on purple background */
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,98 +18,93 @@
 
         #app {
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        select, input, button {
-            margin-bottom: 16px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
             width: 100%;
             box-sizing: border-box;
         }
 
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select,
+        input,
         button {
-            background-color: #6a5acd; /* Slate Blue (Slightly darker purple) */
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: purple;
             color: #fff;
             cursor: pointer;
         }
 
-        button:hover {
-            background-color: #483d8b; /* Dark Slate Blue (Darker shade on hover) */
+        .payment-result {
+            margin-top: 20px;
         }
 
-        hr {
-            margin: 20px 0;
-            border: none;
-            border-top: 1px solid #ddd;
+        .transaction-status,
+        .discount-amount {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
         }
 
-        h2 {
-            color: #6a5acd; /* Slate Blue (Slightly darker purple) */
+        .user-satisfaction,
+        .transaction-status {
+            background-color: #f2f2f2;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        li {
-            margin: 0 8px;
-        }
-
-        p {
-            margin: 10px 0;
+        .rating {
+            list-style-type: none;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e6f7ff;
+            border: 1px solid #99c2ff;
+            border-radius: 5px;
         }
     </style>
-	</head>
-	<body>
+</head>
+<body>
 
 <div id="app">
-    <h1>BPay</h1>
-    
-    
-
-    <label for="offer">Select an offer:</label>
-    <select v-model="selectedOffer">
-        <option v-for="offer in offers" :key="offer.id" :value="offer.id">{{ offer.name }} ({{ offer.amount * 100 }}% Discount)</option>
-    </select>
-
     <label for="satisfaction">User Satisfaction (1-5):</label>
-    <input type="number" v-model="userSatisfaction" min="1" max="5">
+    <input class="user-satisfaction-input" type="number" v-model="userSatisfaction" min="1" max="5">
 
-    <button @click="processPayment">Process Payment</button>
+    <button class="process-payment-btn" @click="processPayment">Process Payment</button>
 
-    <div v-if="transactionStatus">
-        <p>Transaction Status: {{ transactionStatus }}</p>
-        <p v-if="transactionStatus === 'successful'">Discounted Amount: ${{ discountedAmount }}</p>
+    <div class="payment-result" v-if="transactionStatus">
+        <p class="transaction-status">Transaction Status: {{ transactionStatus }}</p>
+        <p v-if="transactionStatus === 'successful'" class="discount-amount">Discounted Amount: ${{ discountedAmount }}</p>
     </div>
 
-    <hr>
+    <div class="user-satisfaction">
+        <h2>Last Five User Ratings</h2>
+        <ul>
+            <li v-for="rating in userRatings.slice().reverse()" :key="rating" class="rating">{{ rating }}/5</li>
+        </ul>
+    </div>
 
-    
-
-    <h2>Last Five User Ratings</h2>
-    <ul>
-        <li v-for="rating in userRatings.slice().reverse()" :key="rating">{{ rating }}/5</li>
-    </ul>
-
-    <h2>Last Five Transaction Status</h2>
-    <ul>
-        <li v-for="status in transactionStatuses.slice().reverse()" :key="status">{{ status }}</li>
-    </ul>
+    <div class="transaction-status">
+        <h2>Last Five Transaction Status</h2>
+        <ul>
+            <li v-for="status in transactionStatuses.slice().reverse()" :key="status">{{ status }}</li>
+        </ul>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
@@ -117,32 +112,15 @@
     new Vue({
         el: '#app',
         data: {
-            offers: [
-                { id: 1, name: 'Discount 10%', amount: 0.1 },
-                { id: 2, name: 'Discount 20%', amount:0.2 },
-				{ id: 3, name: 'Discount 30%', amount: 0.3},
-				{ id: 4, name: 'Discount 40%', amount: 0.4 },
-				{ id: 5, name: 'Discount 50%', amount: 0.5 },
-				{ id: 6, name: 'Discount 60%', amount: 0.6 },
-				{ id: 7, name: 'Discount 70%', amount: 0.7 },
-				{ id: 8, name: 'Discount 80%', amount: 0.8 },
-				{ id: 9, name: 'Free Shipping', amount: 0 },
-            ],
-            customOffer: null,
-            selectedOffer: null,
             userSatisfaction: 5,
             transactionStatus: null,
-            
+            discountedAmount: null,
             userRatings: [],
             transactionStatuses: [],
         },
         methods: {
             processPayment() {
-                // If a custom offer is entered, use it; otherwise, use the selected offer
-                const selectedOffer = this.customOffer !== null ? this.customOffer / 100 : this.getSelectedOfferAmount();
-
                 // Replace this with your logic to send data to the backend
-                console.log('Offer Amount:', selectedOffer);
                 console.log('User Satisfaction:', this.userSatisfaction);
 
                 // Simulate a transaction
@@ -164,11 +142,6 @@
                 this.transactionStatus = transactionStatus;
 
                 // Add logic to send data to the backend and handle the response
-            },
-            getSelectedOfferAmount() {
-                // Get the amount of the selected offer
-                const selectedOffer = this.offers.find(offer => offer.id === this.selectedOffer);
-                return selectedOffer ? selectedOffer.amount : 0;
             },
         },
     });
